@@ -21,20 +21,25 @@ const search = () => {
       query: searchQuery
     }), false); 
 
-    useEffect(() => {
-      updateSearchCount(searchQuery);
-      // updateSearchCount(searchQuery, movies[0]);
+  // Effect to handle search query changes
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchQuery.trim()) {
+        loadMovies();
+      } else {
+        reset();
+      }
+    }, 500);
 
-      const timeoutId = setTimeout(async () => {
-        if(searchQuery.trim()){
-            await loadMovies();
-          }else{
-            reset();
-          }
-        }, 500);
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
 
-        return () => clearTimeout(timeoutId);
-    }, [searchQuery])
+  // Effect to handle movies data changes
+  useEffect(() => {
+    if (searchQuery.trim() && movies?.length > 0) {
+      updateSearchCount(searchQuery, movies[0]);
+    }
+  }, [movies]);
 
   return (
     <View className='flex-1 bg-primary'>
