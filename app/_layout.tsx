@@ -20,11 +20,11 @@ export default function RootLayout() {
         options={{headerShown: false}}  
       />
       <Stack.Screen
-        name="login"
+        name="login/index"
         options={{headerShown: false}}  
       />
       <Stack.Screen
-        name="register"
+        name="register/index"
         options={{headerShown: false}}  
       />
       <Stack.Screen

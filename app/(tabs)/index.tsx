@@ -29,11 +29,11 @@ export default function Index() {
         <Image source={images.bg}
           className="absolute w-full z-0"/>
 
-        <TouchableOpacity onPress={() => router.push('/login/index')} className="bg-blue-500 px-4 py-2 rounded mb-4">
+        <TouchableOpacity onPress={() => router.push('/login')} className="bg-blue-500 px-4 py-2 rounded mb-4">
           <Text className="text-white text-center">Login</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.push('/register/index')} className="bg-green-500 px-4 py-2 rounded mb-4">
+        <TouchableOpacity onPress={() => router.push('/register')} className="bg-green-500 px-4 py-2 rounded mb-4">
           <Text className="text-white text-center">Register</Text>
         </TouchableOpacity>
 
