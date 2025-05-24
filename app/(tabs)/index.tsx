@@ -1,7 +1,7 @@
 import SearchBar from "@/components/SearchBar";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
-import { ActivityIndicator, FlatList, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { Image } from "react-native";
 import { useRouter } from "expo-router";
 import useFetch from "@/services/useFetch";
@@ -28,6 +28,14 @@ export default function Index() {
        className="flex-1 bg-primary">
         <Image source={images.bg}
           className="absolute w-full z-0"/>
+
+        <TouchableOpacity onPress={() => router.push('/login/index')} className="bg-blue-500 px-4 py-2 rounded mb-4">
+          <Text className="text-white text-center">Login</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => router.push('/register/index')} className="bg-green-500 px-4 py-2 rounded mb-4">
+          <Text className="text-white text-center">Register</Text>
+        </TouchableOpacity>
 
         <ScrollView className="flex-1 px-5"
             showsVerticalScrollIndicator={false}

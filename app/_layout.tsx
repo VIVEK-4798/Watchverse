@@ -20,6 +20,14 @@ export default function RootLayout() {
         options={{headerShown: false}}  
       />
       <Stack.Screen
+        name="login"
+        options={{headerShown: false}}  
+      />
+      <Stack.Screen
+        name="register"
+        options={{headerShown: false}}  
+      />
+      <Stack.Screen
         name="movies/[id]"
         options={{headerShown: false}}  
       />
