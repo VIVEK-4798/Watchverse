@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
+import Toast from 'react-native-toast-message';
+import { router } from 'expo-router';
 
 const genresList = ['Action', 'Comedy', 'Drama', 'Sci-Fi', 'Romance', 'Horror', 'Thriller', 'Fantasy', 'Animation', 'Documentary'];
 
@@ -22,9 +24,13 @@ export default function Register() {
     );
   };
 
-  const handleRegister = async () => {
+const handleRegister = async () => {
   if (selectedGenres.length < 3) {
-    alert("Please select at least 3 genres.");
+    Toast.show({
+      type: 'error',
+      text1: 'Genre Selection',
+      text2: 'Please select at least 3 genres.',
+    });
     return;
   }
 
@@ -45,16 +51,34 @@ export default function Register() {
     const data = await response.json();
 
     if (response.ok) {
-      alert('Registration successful! Redirecting to login...');
-      router.push('/login'); // You can add this in the next step
+      Toast.show({
+        type: 'success',
+        text1: 'Registration successful!',
+        text2: 'Redirecting to login...',
+      });
+
+      setTimeout(() => {
+        router.push('/login');
+      }, 2000);
+
     } else {
-      alert(data.message || 'Registration failed');
+      Toast.show({
+        type: 'error',
+        text1: 'Registration failed',
+        text2: data.message || 'Please try again.',
+      });
     }
+
   } catch (error) {
     console.error('Error:', error);
-    alert('An error occurred. Please try again.');
+    Toast.show({
+      type: 'error',
+      text1: 'Error',
+      text2: 'An error occurred. Please try again.',
+    });
   }
 };
+
 
   return (
     <LinearGradient

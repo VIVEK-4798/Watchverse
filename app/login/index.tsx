@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
+import Toast from 'react-native-toast-message';
+import { router } from 'expo-router';
 
 export default function Login() {
   const router = useRouter();
@@ -10,10 +12,46 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-  const handleLogin = () => {
-    console.log("Login:", { email, password });
-    // Later: Add fetch to backend
-  };
+const handleLogin = async () => {
+  try {
+    const response = await fetch('http://192.168.191.237:3000/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      Toast.show({
+        type: 'success',
+        text1: 'Login successful!',
+        text2: 'Redirecting to Home Page...',
+      });
+
+      setTimeout(() => {
+        router.push('/(tabs)'); 
+      }, 1000);
+
+    } else {
+      Toast.show({
+        type: 'error',
+        text1: 'Login Failed',
+        text2: data.message,
+      });
+    }
+
+  } catch (error) {
+    Toast.show({
+      type: 'error',
+      text1: 'Error',
+      text2: 'Something went wrong. Please try again.',
+    });
+    console.error(error);
+  }
+};
 
   return (
     <LinearGradient
