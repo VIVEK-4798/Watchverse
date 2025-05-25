@@ -1,77 +1,102 @@
-import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  Button,
+} from 'react-native';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
-import { router } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
+import { useAuth } from '../../auth-context';
+import { FontAwesome } from '@expo/vector-icons';
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function Login() {
   const router = useRouter();
+  const { isAuthenticated, login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-const handleLogin = async () => {
-  try {
-    const response = await fetch('http://192.168.191.237:3000/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ email, password })
-    });
+  // Google Auth Setup
+  // const [request, response, promptAsync] = Google.useAuthRequest({
+  //   // expoClientId: 'YOUR_EXPO_CLIENT_ID.apps.googleusercontent.com',
+  //   androidClientId: '297110802841-4its0ejjhc70k169dateedukpq49kemp.apps.googleusercontent.com',
+  //   scopes: ['profile', 'email'],
+  //   // iosClientId: 'YOUR_IOS_CLIENT_ID.apps.googleusercontent.com',
+  // });
 
-    const data = await response.json();
+  const [request, response, promptAsync] = Google.useAuthRequest({
+  clientId: '297110802841-4its0ejjhc70k169dateedukpq49kemp.apps.googleusercontent.com', // <- Use this
+  androidClientId: '297110802841-m8gigon5o7jton66t6ksludbgmecdmm0.apps.googleusercontent.com', // keep this too for real Android builds
+});
 
-    if (response.ok) {
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace('/(tabs)');
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { authentication } = response;
+      // Handle login here with authentication.accessToken if needed
+      login();
       Toast.show({
         type: 'success',
-        text1: 'Login successful!',
-        text2: 'Redirecting to Home Page...',
+        text1: 'Google Sign-In successful!',
       });
-
-      setTimeout(() => {
-        router.push('/(tabs)'); 
-      }, 1000);
-
-    } else {
-      Toast.show({
-        type: 'error',
-        text1: 'Login Failed',
-        text2: data.message,
-      });
+      router.replace('/(tabs)');
     }
+  }, [response]);
 
-  } catch (error) {
-    Toast.show({
-      type: 'error',
-      text1: 'Error',
-      text2: 'Something went wrong. Please try again.',
-    });
-    console.error(error);
-  }
-};
+  const handleLogin = async () => {
+    try {
+      const res = await fetch('http://192.168.191.237:3000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        Toast.show({
+          type: 'success',
+          text1: 'Login successful!',
+          text2: 'Redirecting to Home Page...',
+        });
+        login();
+        setTimeout(() => router.push('/(tabs)'), 1000);
+      } else {
+        Toast.show({ type: 'error', text1: 'Login Failed', text2: data.message });
+      }
+    } catch (err) {
+      Toast.show({ type: 'error', text1: 'Error', text2: 'Something went wrong.' });
+      console.error(err);
+    }
+  };
 
   return (
-    <LinearGradient
-      colors={['#1a1a2e', '#16213e', '#0f3460']}
-      className="flex-1"
-    >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1"
-      >
+    <LinearGradient colors={['#1a1a2e', '#16213e', '#0f3460']} className="flex-1">
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1">
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="px-6 mt-16">
-          {/* Header Section */}
           <View className="items-center pt-16 pb-8">
             <Text className="text-white text-3xl font-bold mb-2">Welcome Back</Text>
             <Text className="text-gray-400 text-base">Sign in to continue</Text>
           </View>
 
-          {/* Form Section */}
           <View className="mb-8">
-            {/* Email Input */}
             <View className="flex-row items-center bg-white/10 rounded-xl mb-4 px-4">
               <MaterialIcons name="email" size={20} color="#aaa" />
               <TextInput
@@ -85,7 +110,6 @@ const handleLogin = async () => {
               />
             </View>
 
-            {/* Password Input */}
             <View className="flex-row items-center bg-white/10 rounded-xl mb-4 px-4">
               <MaterialIcons name="lock" size={20} color="#aaa" />
               <TextInput
@@ -96,24 +120,19 @@ const handleLogin = async () => {
                 value={password}
                 onChangeText={setPassword}
               />
-              <TouchableOpacity 
-                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-                className="p-2"
-              >
-                <MaterialIcons 
-                  name={isPasswordVisible ? "visibility" : "visibility-off"} 
-                  size={20} 
-                  color="#aaa" 
+              <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)} className="p-2">
+                <MaterialIcons
+                  name={isPasswordVisible ? 'visibility' : 'visibility-off'}
+                  size={20}
+                  color="#aaa"
                 />
               </TouchableOpacity>
             </View>
 
-            {/* Forgot Password Link */}
             <TouchableOpacity className="items-end mb-6">
               <Text className="text-custom_purple text-sm">Forgot Password?</Text>
             </TouchableOpacity>
 
-            {/* Login Button */}
             <TouchableOpacity
               onPress={handleLogin}
               className="rounded-xl overflow-hidden shadow-lg shadow-rose-600/30"
@@ -128,27 +147,22 @@ const handleLogin = async () => {
               </LinearGradient>
             </TouchableOpacity>
 
-            {/* Divider */}
             <View className="flex-row items-center my-6">
               <View className="flex-1 h-px bg-gray-600" />
               <Text className="text-gray-400 mx-4">OR</Text>
               <View className="flex-1 h-px bg-gray-600" />
             </View>
 
-            {/* Social Login Options */}
-            <View className="flex-row justify-center space-x-4 mb-6">
-              <TouchableOpacity className="bg-white/10 p-3 rounded-full">
-                <MaterialIcons name="facebook" size={24} color="#5588F3" />
+            {/* Google Sign In Button */}
+              <TouchableOpacity
+                disabled={!request}
+                onPress={() => promptAsync()}
+                className="bg-white/10 flex-row items-center justify-center py-3 rounded-xl mb-6"
+              >
+                <FontAwesome name="google" size={24} color="#db4437" />
+                <Text className="text-white text-base ml-2">Sign in with Google</Text>
               </TouchableOpacity>
-              <TouchableOpacity className="bg-white/10 p-3 rounded-full">
-                <MaterialIcons name="language" size={24} color="#ab85db" />
-              </TouchableOpacity>
-              <TouchableOpacity className="bg-white/10 p-3 rounded-full">
-                <MaterialIcons name="apple" size={24} color="white" />
-              </TouchableOpacity>
-            </View>
 
-            {/* Register Link */}
             <View className="flex-row justify-center">
               <Text className="text-gray-400 text-sm">Don't have an account?</Text>
               <TouchableOpacity onPress={() => router.push('/register')}>
