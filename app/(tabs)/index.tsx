@@ -12,7 +12,7 @@ import TrendingCard from "@/components/TrendingCard";
 
 export default function Index() {
   const router =  useRouter();
-
+  
   const{
     data: trendingMovies, 
     loading: trendingLoading,
