@@ -17,7 +17,7 @@ import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { useAuth } from '../../auth-context';
 import { FontAwesome } from '@expo/vector-icons';
-
+import * as AuthSession from 'expo-auth-session';
 WebBrowser.maybeCompleteAuthSession();
 
 export default function Login() {
@@ -26,20 +26,17 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  // const redirectUri = AuthSession.makeRedirectUri({ useProxy: true } as any);
+const redirectUri = AuthSession.makeRedirectUri({});
+console.log('Redirect URxxI:', redirectUri);
+  // const redirectUri = 'https://auth.expo.io/@vivek4798/watchverse'
 
-  // Google Auth Setup
-  // const [request, response, promptAsync] = Google.useAuthRequest({
-  //   // expoClientId: 'YOUR_EXPO_CLIENT_ID.apps.googleusercontent.com',
-  //   androidClientId: '297110802841-4its0ejjhc70k169dateedukpq49kemp.apps.googleusercontent.com',
-  //   scopes: ['profile', 'email'],
-  //   // iosClientId: 'YOUR_IOS_CLIENT_ID.apps.googleusercontent.com',
-  // });
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-  clientId: '297110802841-4its0ejjhc70k169dateedukpq49kemp.apps.googleusercontent.com', // <- Use this
-  androidClientId: '297110802841-m8gigon5o7jton66t6ksludbgmecdmm0.apps.googleusercontent.com', // keep this too for real Android builds
-});
-
+    clientId: '297110802841-4its0ejjhc70k169dateedukpq49kemp.apps.googleusercontent.com',
+    androidClientId: '297110802841-m8gigon5o7jton66t6ksludbgmecdmm0.apps.googleusercontent.com',
+    redirectUri,
+  });
 
   useEffect(() => {
     if (isAuthenticated) {

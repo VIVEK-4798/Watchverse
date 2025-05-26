@@ -2,6 +2,7 @@
   "expo": {
     "name": "watchverse",
     "slug": "watchverse",
+    "owner": "vivek4798", 
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
