@@ -20,6 +20,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import * as AuthSession from 'expo-auth-session';
 WebBrowser.maybeCompleteAuthSession();
 
+
 export default function Login() {
   const router = useRouter();
   const { isAuthenticated, login } = useAuth();
@@ -27,9 +28,8 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   // const redirectUri = AuthSession.makeRedirectUri({ useProxy: true } as any);
-const redirectUri = AuthSession.makeRedirectUri({});
-console.log('Redirect URxxI:', redirectUri);
-  // const redirectUri = 'https://auth.expo.io/@vivek4798/watchverse'
+  const redirectUri = `https://auth.expo.io/@vivek4798/watchverse`;
+  console.log('Redirect URI:', redirectUri);
 
 
   const [request, response, promptAsync] = Google.useAuthRequest({
